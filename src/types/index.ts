@@ -153,6 +153,21 @@ export interface ProcessingParams {
   cv_ids?: string[]
 }
 
+// Respuesta del endpoint de procesamiento
+export interface ProcessingResponse {
+  processing_id: string
+  ddc_id: string
+  status: string
+  cv_count: number
+  cv_ids: string[]
+  weights: {
+    profession: number
+    experience: number
+    skills: number
+  }
+  message: string
+}
+
 // Resultados de CV
 export interface CVResult {
   id: string

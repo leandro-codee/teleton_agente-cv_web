@@ -2,7 +2,7 @@ import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { api } from '@/lib/api'
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: any = {
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -52,13 +52,13 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
         token.accessToken = user.accessToken
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (token) {
         session.accessToken = token.accessToken
         session.user.id = token.sub

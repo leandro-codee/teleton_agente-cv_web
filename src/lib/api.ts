@@ -1,4 +1,5 @@
-import { User, CV, DDC, Company, CompanySettings, NotificationSettings, CVAnalysis, Processing, ProcessingParams, CVResult, CreatedDDC, CVToDDC, BulkUploadResponse } from '@/types'
+import { User, CV, DDC, Company, CompanySettings, NotificationSettings, CVAnalysis, Processing, ProcessingParams, ProcessingResponse, CVResult, CreatedDDC, CVToDDC, BulkUploadResponse } from '@/types'
+import { PROCESSING_CONFIG } from '@/lib/constants'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
@@ -214,10 +215,16 @@ export const api = {
   },
 
   // Processing
-  processCVs: async (params: ProcessingParams): Promise<Processing> => {
+  processCVs: async (params: ProcessingParams): Promise<ProcessingResponse> => {
     return fetchApi('/v1/processing/start', {
       method: 'POST',
       body: JSON.stringify(params),
+    })
+  },
+
+  finishProcessing: async (processingId: string): Promise<any> => {
+    return fetchApi(`/v1/processing/${processingId}/finish`, {
+      method: 'POST',
     })
   },
 
@@ -233,7 +240,12 @@ export const api = {
       skills: number
     }
   }): Promise<any> => {
-    const workerUrl = process.env.NEXT_PUBLIC_PROCESSING_WORKER_URL || 'https://teleton-agente-cv-api-worker-processing-525254047375.us-central1.run.app'
+    const workerUrl = PROCESSING_CONFIG.WORKER_URL
+    
+    console.log('Enviando petición al worker:', {
+      url: `${workerUrl}/process-cvs`,
+      data: batchData
+    })
     
     const response = await fetch(`${workerUrl}/process-cvs`, {
       method: 'POST',
@@ -244,12 +256,29 @@ export const api = {
       body: JSON.stringify(batchData),
     })
 
+    console.log('Respuesta del worker:', {
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    })
+
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Network error' }))
-      throw new Error(error.error || 'Error processing batch')
+      const errorText = await response.text()
+      console.error('Error del worker:', errorText)
+      
+      let errorData
+      try {
+        errorData = JSON.parse(errorText)
+      } catch {
+        errorData = { error: errorText }
+      }
+      
+      throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
     }
 
-    return response.json()
+    const result = await response.json()
+    console.log('Resultado del worker:', result)
+    return result
   },
 
   getProcessingStatus: async (processingId: string): Promise<Processing> => {
@@ -364,8 +393,14 @@ export const api = {
   },
 
   markNotificationAsRead: async (notificationId: string): Promise<void> => {
-    return fetchApi(`/v1/notifications/${notificationId}/read`, {
-      method: 'PUT',
+    return fetchApi(`/v1/notifications/${notificationId}/mark-read`, {
+      method: 'POST',
+    })
+  },
+
+  deleteNotification: async (notificationId: string): Promise<void> => {
+    return fetchApi(`/v1/notifications/${notificationId}`, {
+      method: 'DELETE',
     })
   },
 

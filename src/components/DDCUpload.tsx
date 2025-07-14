@@ -42,7 +42,7 @@ export function DDCUpload() {
       })
 
       // Register DDC in backend
-      await api.uploadDDC(file.name, gcsPath)
+      await api.uploadDDC(file.name, gcsPath as any)
       
       setDdcInfo({ filename: file.name })
       setUploadStatus('success')

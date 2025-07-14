@@ -34,7 +34,7 @@ export function ProcessingSettings() {
     handleSubmit,
     formState: { errors },
   } = useForm<ProcessingParams>({
-    resolver: zodResolver(processingSchema),
+    resolver: zodResolver(processingSchema) as any,
   })
 
   // Update weights and ensure they sum to 100%
@@ -79,12 +79,12 @@ export function ProcessingSettings() {
         profession_weight: professionWeight[0] / 100,
         experience_weight: experienceWeight[0] / 100,
         skills_weight: skillsWeight[0] / 100,
-      }
+      } as any
 
       const response = await api.processCVs(params)
       
       toast.success("¡Procesamiento completado!", {
-        description: `Se procesaron ${response.processed_count} CVs exitosamente.`,
+        description: `Se procesaron CVs exitosamente.`,
       })
 
     } catch (error) {

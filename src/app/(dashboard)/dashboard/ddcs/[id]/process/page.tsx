@@ -6,19 +6,19 @@ import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import { toast } from 'sonner'
 import { api } from '@/lib/api'
 import { useProcessing } from '@/hooks/useProcessing'
 import { WeightConfig, PROCESSING_PRESETS } from '@/types'
+import { PROCESSING_CONFIG } from '@/lib/constants'
 import ProcessingConfig from '@/components/dashboard/ProcessingConfig'
-import { ArrowLeft, FileText, Users, BarChart3 } from 'lucide-react'
+import { ArrowLeft, FileText, Users, BarChart3, Loader2 } from 'lucide-react'
 
 const ProcessDDCPage = () => {
   const params = useParams()
   const router = useRouter()
   const ddcId = params.id as string
-  const { startProcessing, isProcessing, progress } = useProcessing()
+  const { startProcessing, isProcessing } = useProcessing()
 
   const { data: ddc } = useQuery({
     queryKey: ['ddc', ddcId],
@@ -88,29 +88,18 @@ const ProcessDDCPage = () => {
         </div>
       </div>
 
-      {/* Barra de progreso durante procesamiento */}
+      {/* Loader simple durante procesamiento */}
       {isProcessing && (
         <Card>
           <CardContent className="pt-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Procesando CVs...</span>
-                <span className="text-sm text-gray-500">
-                  Lote {progress.currentBatch} de {progress.totalBatches}
-                </span>
-              </div>
-              <Progress 
-                value={(progress.processedCVs / progress.totalCVs) * 100} 
-                className="w-full"
-              />
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="text-gray-500">
-                  <div>CVs procesados: {progress.processedCVs} de {progress.totalCVs}</div>
-                  <div>Lote actual: {progress.currentBatchProcessed} de {progress.currentBatchCVs} CVs</div>
+            <div className="flex items-center justify-center space-x-3 py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+              <div className="text-center">
+                <div className="text-lg font-medium text-gray-900">
+                  Procesando CVs...
                 </div>
-                <div className="text-right text-gray-500">
-                  <div>Progreso total: {Math.round((progress.processedCVs / progress.totalCVs) * 100)}%</div>
-                  <div>Lotes restantes: {progress.totalBatches - progress.currentBatch}</div>
+                <div className="text-sm text-gray-500 mt-1">
+                  Los CVs se están procesando en paralelo con reintentos automáticos
                 </div>
               </div>
             </div>

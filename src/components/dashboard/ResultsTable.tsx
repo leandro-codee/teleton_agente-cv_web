@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AIRationaleModal } from '@/components/ui/modal'
 import { 
   Eye, 
   ExternalLink, 
@@ -20,7 +21,8 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-  ArrowUpDown
+  ArrowUpDown,
+  Brain
 } from 'lucide-react'
 import { CVAnalysis } from '@/types'
 
@@ -238,6 +240,17 @@ const ResultsTable: React.FC<ResultsTableProps> = ({
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
+                        {result.ai_reasoning && (
+                          <AIRationaleModal
+                            rationale={result.ai_reasoning}
+                            candidateName={result.candidate_name}
+                            trigger={
+                              <Button size="sm" variant="outline">
+                                <Brain className="h-4 w-4" />
+                              </Button>
+                            }
+                          />
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
