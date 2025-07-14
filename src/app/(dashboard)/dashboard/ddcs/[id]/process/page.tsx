@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
 import { toast } from 'sonner'
 import { api } from '@/lib/api'
 import { useProcessing } from '@/hooks/useProcessing'
@@ -17,7 +18,7 @@ const ProcessDDCPage = () => {
   const params = useParams()
   const router = useRouter()
   const ddcId = params.id as string
-  const { startProcessing, isStarting } = useProcessing()
+  const { startProcessing, isProcessing, progress } = useProcessing()
 
   const { data: ddc } = useQuery({
     queryKey: ['ddc', ddcId],
@@ -35,14 +36,13 @@ const ProcessDDCPage = () => {
   })
 
   const handleProcessingStart = (config: WeightConfig & { name: string }) => {
-    startProcessing(
-      { ddcId, config },
-      {
-        onSuccess: () => {
-          router.push('/dashboard/notifications')
-        }
-      }
-    )
+    startProcessing({
+      ddc_id: ddcId,
+      name: config.name,
+      profession_weight: config.profession,
+      experience_weight: config.experience,
+      skills_weight: config.skills,
+    })
   }
 
   const formatDate = (dateString: string) => {
@@ -87,6 +87,36 @@ const ProcessDDCPage = () => {
           </p>
         </div>
       </div>
+
+      {/* Barra de progreso durante procesamiento */}
+      {isProcessing && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Procesando CVs...</span>
+                <span className="text-sm text-gray-500">
+                  Lote {progress.currentBatch} de {progress.totalBatches}
+                </span>
+              </div>
+              <Progress 
+                value={(progress.processedCVs / progress.totalCVs) * 100} 
+                className="w-full"
+              />
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="text-gray-500">
+                  <div>CVs procesados: {progress.processedCVs} de {progress.totalCVs}</div>
+                  <div>Lote actual: {progress.currentBatchProcessed} de {progress.currentBatchCVs} CVs</div>
+                </div>
+                <div className="text-right text-gray-500">
+                  <div>Progreso total: {Math.round((progress.processedCVs / progress.totalCVs) * 100)}%</div>
+                  <div>Lotes restantes: {progress.totalBatches - progress.currentBatch}</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Información de la DDC */}
@@ -186,7 +216,7 @@ const ProcessDDCPage = () => {
             <ProcessingConfig
               ddcId={ddcId}
               onProcessingStart={handleProcessingStart}
-              isLoading={isStarting}
+              isLoading={isProcessing}
             />
           )}
         </div>

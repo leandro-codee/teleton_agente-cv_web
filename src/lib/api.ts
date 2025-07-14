@@ -221,6 +221,37 @@ export const api = {
     })
   },
 
+  processCVBatch: async (batchData: {
+    processing_id: string
+    ddc_id: string
+    cv_ids: string[]
+    batch_index: number
+    total_batches: number
+    weights: {
+      profession: number
+      experience: number
+      skills: number
+    }
+  }): Promise<any> => {
+    const workerUrl = process.env.NEXT_PUBLIC_PROCESSING_WORKER_URL || 'https://teleton-agente-cv-api-worker-processing-525254047375.us-central1.run.app'
+    
+    const response = await fetch(`${workerUrl}/process-cvs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+      },
+      body: JSON.stringify(batchData),
+    })
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Network error' }))
+      throw new Error(error.error || 'Error processing batch')
+    }
+
+    return response.json()
+  },
+
   getProcessingStatus: async (processingId: string): Promise<Processing> => {
     return fetchApi(`/v1/processing/${processingId}`)
   },
