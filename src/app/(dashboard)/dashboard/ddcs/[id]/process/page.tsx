@@ -12,7 +12,7 @@ import { useProcessing } from '@/hooks/useProcessing'
 import { WeightConfig, PROCESSING_PRESETS } from '@/types'
 import { PROCESSING_CONFIG } from '@/lib/constants'
 import ProcessingConfig from '@/components/dashboard/ProcessingConfig'
-import { ArrowLeft, FileText, Users, BarChart3, Loader2 } from 'lucide-react'
+import { ArrowLeft, FileText, Users, BarChart3, Loader2, Clock, AlertTriangle, ExternalLink } from 'lucide-react'
 
 const ProcessDDCPage = () => {
   const params = useParams()
@@ -34,6 +34,9 @@ const ProcessDDCPage = () => {
     queryKey: ['ddc-processings', ddcId],
     queryFn: () => api.getDDCProcessings(ddcId),
   })
+
+  // Detectar procesamiento activo
+  const activeProcessing = processings.find(p => p.status === 'pending' || p.status === 'processing')
 
   const handleProcessingStart = (config: WeightConfig & { name: string }) => {
     startProcessing({
@@ -65,9 +68,16 @@ const ProcessDDCPage = () => {
         return <Badge className="bg-yellow-100 text-yellow-800">Pendiente</Badge>
       case 'failed':
         return <Badge className="bg-red-100 text-red-800">Fallido</Badge>
+      case 'cancelled':
+        return <Badge className="bg-gray-100 text-gray-800">Cancelado</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }
+  }
+
+  const getProgressPercentage = (processing: any) => {
+    if (processing.cv_count === 0) return 0
+    return Math.round(((processing.processed_count + processing.failed_count) / processing.cv_count) * 100)
   }
 
   return (
@@ -87,6 +97,90 @@ const ProcessDDCPage = () => {
           </p>
         </div>
       </div>
+
+      {/* Alerta de Procesamiento Activo */}
+      {activeProcessing && (
+        <Card className="border-yellow-200 bg-yellow-50">
+          <CardContent className="pt-6">
+            <div className="flex items-start space-x-4">
+              <AlertTriangle className="h-6 w-6 text-yellow-600 mt-1 flex-shrink-0" />
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold text-yellow-800">
+                    Procesamiento Activo Detectado
+                  </h3>
+                  {getStatusBadge(activeProcessing.status)}
+                </div>
+                
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-yellow-800">
+                      {activeProcessing.name}
+                    </p>
+                    <p className="text-sm text-yellow-700">
+                      Iniciado el {formatDate(activeProcessing.started_at)}
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <p className="text-yellow-700">CVs Procesados</p>
+                      <p className="font-medium text-yellow-800">
+                        {activeProcessing.processed_count}/{activeProcessing.cv_count}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-yellow-700">Progreso</p>
+                      <p className="font-medium text-yellow-800">
+                        {getProgressPercentage(activeProcessing)}%
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-yellow-700">Configuración</p>
+                      <p className="font-medium text-yellow-800 text-xs">
+                        P:{activeProcessing.profession_weight}% | 
+                        E:{activeProcessing.experience_weight}% | 
+                        H:{activeProcessing.skills_weight}%
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-yellow-700">Estado</p>
+                      <p className="font-medium text-yellow-800 capitalize">
+                        {activeProcessing.status === 'pending' ? 'Pendiente' : 'Procesando'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {activeProcessing.status === 'processing' && (
+                    <div className="mt-3">
+                      <div className="w-full bg-yellow-200 rounded-full h-2">
+                        <div 
+                          className="bg-yellow-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${getProgressPercentage(activeProcessing)}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center space-x-3 pt-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => router.push(`/dashboard/ddcs/${ddcId}/results`)}
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Ver en Historial
+                    </Button>
+                    <p className="text-xs text-yellow-700">
+                      Debes esperar a que termine este procesamiento antes de iniciar uno nuevo
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Loader simple durante procesamiento */}
       {isProcessing && (
@@ -134,6 +228,14 @@ const ProcessDDCPage = () => {
                   {ddc?.status === 'open' ? 'Abierto' : 'Cerrado'}
                 </Badge>
               </div>
+              {activeProcessing && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Procesamiento activo:</span>
+                  <Badge className="bg-yellow-100 text-yellow-800">
+                    {activeProcessing.status === 'pending' ? 'Pendiente' : 'Procesando'}
+                  </Badge>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -206,6 +308,7 @@ const ProcessDDCPage = () => {
               ddcId={ddcId}
               onProcessingStart={handleProcessingStart}
               isLoading={isProcessing}
+              disabled={!!activeProcessing}
             />
           )}
         </div>

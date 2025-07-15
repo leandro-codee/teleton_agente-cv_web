@@ -64,6 +64,10 @@ export const api = {
     return fetchApi(`/v1/ddcs/${ddcId}/cvs`)
   },
 
+  getDDCCVIds: async (ddcId: string): Promise<string[]> => {
+    return fetchApi(`/v1/ddcs/${ddcId}/cv-ids`)
+  },
+
   getDDCProcessings: async (ddcId: string): Promise<Processing[]> => {
     return fetchApi(`/v1/ddcs/${ddcId}/processings`)
   },
@@ -224,6 +228,12 @@ export const api = {
 
   finishProcessing: async (processingId: string): Promise<any> => {
     return fetchApi(`/v1/processing/${processingId}/finish`, {
+      method: 'POST',
+    })
+  },
+
+  cancelProcessing: async (processingId: string): Promise<any> => {
+    return fetchApi(`/v1/processing/${processingId}/cancel`, {
       method: 'POST',
     })
   },

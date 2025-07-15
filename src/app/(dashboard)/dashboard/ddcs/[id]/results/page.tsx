@@ -1,14 +1,25 @@
 'use client'
 
 import React from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { toast } from 'sonner'
+import { 
+  ArrowLeft, 
+  BarChart3, 
+  CheckCircle, 
+  Clock, 
+  Users, 
+  XCircle, 
+  AlertTriangle,
+  X,
+  Loader2
+} from 'lucide-react'
 import { api } from '@/lib/api'
 import { Processing } from '@/types'
-import { ArrowLeft, BarChart3, Clock, CheckCircle, XCircle, Calendar, Users } from 'lucide-react'
 
 const DDCResultsPage = () => {
   const params = useParams()
@@ -24,6 +35,37 @@ const DDCResultsPage = () => {
     queryKey: ['ddc-processings', ddcId],
     queryFn: () => api.getDDCProcessings(ddcId),
   })
+
+  const queryClient = useQueryClient()
+
+  const cancelProcessingMutation = useMutation({
+    mutationFn: (processingId: string) => api.cancelProcessing(processingId),
+    onSuccess: (data, processingId) => {
+      toast.success("Procesamiento cancelado", {
+        description: data.message || "El procesamiento ha sido cancelado exitosamente",
+      })
+      // Refrescar la lista de procesamientos
+      queryClient.invalidateQueries({ queryKey: ['ddc-processings', ddcId] })
+    },
+    onError: (error: any) => {
+      toast.error("Error al cancelar procesamiento", {
+        description: error.message || "No se pudo cancelar el procesamiento",
+      })
+    },
+  })
+
+  const handleCancelProcessing = (processing: Processing) => {
+    if (processing.status !== 'pending' && processing.status !== 'processing') {
+      toast.error("No se puede cancelar", {
+        description: "Solo se pueden cancelar procesamientos pendientes o en proceso",
+      })
+      return
+    }
+
+    if (confirm(`¿Estás seguro de que quieres cancelar el procesamiento "${processing.name}"?`)) {
+      cancelProcessingMutation.mutate(processing.id)
+    }
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-ES', {
@@ -45,6 +87,8 @@ const DDCResultsPage = () => {
         return <Badge className="bg-yellow-100 text-yellow-800">Pendiente</Badge>
       case 'failed':
         return <Badge className="bg-red-100 text-red-800">Fallido</Badge>
+      case 'cancelled':
+        return <Badge className="bg-gray-100 text-gray-800">Cancelado</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }
@@ -60,6 +104,8 @@ const DDCResultsPage = () => {
         return <Clock className="h-5 w-5 text-yellow-600" />
       case 'failed':
         return <XCircle className="h-5 w-5 text-red-600" />
+      case 'cancelled':
+        return <X className="h-5 w-5 text-gray-600" />
       default:
         return <Clock className="h-5 w-5 text-gray-600" />
     }
@@ -217,6 +263,21 @@ const DDCResultsPage = () => {
                           onClick={() => handleViewResults(processing)}
                         >
                           Ver Resultados
+                        </Button>
+                      )}
+                      {(processing.status === 'pending' || processing.status === 'processing') && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleCancelProcessing(processing)}
+                          disabled={cancelProcessingMutation.isPending}
+                        >
+                          {cancelProcessingMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <X className="h-4 w-4" />
+                          )}
+                          Cancelar
                         </Button>
                       )}
                     </div>

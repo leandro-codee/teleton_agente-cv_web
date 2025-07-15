@@ -13,12 +13,14 @@ interface ProcessingConfigProps {
   ddcId: string
   onProcessingStart: (config: WeightConfig & { name: string }) => void
   isLoading?: boolean
+  disabled?: boolean
 }
 
 const ProcessingConfig: React.FC<ProcessingConfigProps> = ({ 
   ddcId, 
   onProcessingStart, 
-  isLoading = false 
+  isLoading = false,
+  disabled = false
 }) => {
   const [weights, setWeights] = useState<WeightConfig>({ profession: 0, experience: 0, skills: 0 })
   const [customName, setCustomName] = useState("")
@@ -75,14 +77,14 @@ const ProcessingConfig: React.FC<ProcessingConfigProps> = ({
             placeholder="Ej: Evaluación Q1 2024"
             value={customName}
             onChange={(e) => setCustomName(e.target.value)}
-            disabled={isLoading}
+            disabled={isLoading || disabled}
           />
         </div>
         
         {/* Presets */}
         <div className="space-y-2">
           <Label>Presets predefinidos</Label>
-          <Select onValueChange={handlePresetSelect} disabled={isLoading}>
+          <Select onValueChange={handlePresetSelect} disabled={isLoading || disabled}>
             <SelectTrigger>
               <SelectValue placeholder="Selecciona un preset o configura manualmente" />
             </SelectTrigger>
@@ -101,21 +103,21 @@ const ProcessingConfig: React.FC<ProcessingConfigProps> = ({
             label="Profesión"
             value={weights.profession}
             onChange={(value) => handleWeightChange('profession', value)}
-            disabled={isLoading}
+            disabled={isLoading || disabled}
           />
           
           <WeightSlider
             label="Experiencia"
             value={weights.experience}
             onChange={(value) => handleWeightChange('experience', value)}
-            disabled={isLoading}
+            disabled={isLoading || disabled}
           />
           
           <WeightSlider
             label="Habilidades Específicas"
             value={weights.skills}
             onChange={(value) => handleWeightChange('skills', value)}
-            disabled={isLoading}
+            disabled={isLoading || disabled}
           />
         </div>
         
@@ -127,17 +129,17 @@ const ProcessingConfig: React.FC<ProcessingConfigProps> = ({
           <Button 
             onClick={resetWeights} 
             variant="outline"
-            disabled={isLoading}
+            disabled={isLoading || disabled}
             className="flex-1"
           >
             Reset (Todo en 0)
           </Button>
           <Button 
             onClick={handleProcess} 
-            disabled={!isValid || isLoading}
+            disabled={!isValid || isLoading || disabled}
             className="flex-1"
           >
-            {isLoading ? "Iniciando..." : "Iniciar Procesamiento"}
+            {isLoading ? "Iniciando..." : disabled ? "Procesamiento Activo" : "Iniciar Procesamiento"}
           </Button>
         </div>
         

@@ -74,7 +74,18 @@ export const useProcessing = () => {
   }
 
   const startProcessingMutation = useMutation({
-    mutationFn: (params: ProcessingParams) => api.processCVs(params),
+    mutationFn: async (params: ProcessingParams) => {
+      // Primero obtener solo los cv_ids usando el nuevo endpoint
+      const cvIds = await api.getDDCCVIds(params.ddc_id)
+      
+      // Luego iniciar el procesamiento con los cv_ids obtenidos
+      const result = await api.processCVs(params)
+      
+      return {
+        ...result,
+        cv_ids: cvIds // Usar los cv_ids obtenidos del nuevo endpoint
+      }
+    },
     onSuccess: async (result) => {
       const { processing_id, cv_ids, weights } = result
       
@@ -163,9 +174,16 @@ export const useProcessing = () => {
       }, 3000)
     },
     onError: (error: any) => {
-      toast.error("Error al iniciar procesamiento", {
-        description: error.message || "Error desconocido",
-      })
+      // Manejar específicamente el error de procesamiento único
+      if (error.message && error.message.includes('Ya existe un procesamiento activo')) {
+        toast.error("Procesamiento en curso", {
+          description: error.message,
+        })
+      } else {
+        toast.error("Error al iniciar procesamiento", {
+          description: error.message || "Error desconocido",
+        })
+      }
       setIsProcessing(false)
     },
   })
