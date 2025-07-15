@@ -119,3 +119,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Estilos para los toasts de Sonner */
+[data-sonner-toaster] {
+  --description-text: hsl(var(--foreground)) !important;
+  --description-text-dark: hsl(var(--foreground)) !important;
+}
+
+[data-sonner-toaster] [data-description] {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Asegurar que las descripciones sean legibles en modo claro y oscuro */
+[data-sonner-toaster] [data-description] {
+  color: #000000 !important;
+}
+
+.dark [data-sonner-toaster] [data-description] {
+  color: #ffffff !important;
+}

@@ -89,8 +89,8 @@ export const useProcessing = () => {
     onSuccess: async (result) => {
       const { processing_id, cv_ids, weights } = result
       
-      // Dividir CVs en lotes usando la configuración
-      const batchSize = PROCESSING_CONFIG.BATCH_SIZE
+      // Dividir CVs en lotes usando la configuración dinámica
+      const batchSize = PROCESSING_CONFIG.getBatchSize(cv_ids.length)
       const batches: string[][] = []
       for (let i = 0; i < cv_ids.length; i += batchSize) {
         batches.push(cv_ids.slice(i, i + batchSize))

@@ -21,7 +21,13 @@ export const FILE_TYPES = {
 
 // Configuración de procesamiento
 export const PROCESSING_CONFIG = {
-  BATCH_SIZE: parseInt(process.env.NEXT_PUBLIC_PROCESSING_BATCH_SIZE || '40'),
+  // Función para calcular el tamaño del lote basado en la cantidad total de CVs
+  getBatchSize: (totalCVs: number): number => {
+    const NUM_WORKERS = 15
+    const batchSize = Math.ceil(totalCVs / NUM_WORKERS)
+    // Asegurar un mínimo de 1 CV por lote
+    return Math.max(batchSize, 1)
+  },
   MAX_RETRIES: parseInt(process.env.NEXT_PUBLIC_PROCESSING_MAX_RETRIES || '3'),
   RETRY_DELAY: parseInt(process.env.NEXT_PUBLIC_PROCESSING_RETRY_DELAY || '1000'),
   WORKER_URL: process.env.NEXT_PUBLIC_PROCESSING_WORKER_URL || 'https://teleton-agente-cv-api-worker-processing-525254047375.us-central1.run.app'

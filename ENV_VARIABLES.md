@@ -6,7 +6,6 @@
 
 ```env
 # Configuración de Procesamiento
-NEXT_PUBLIC_PROCESSING_BATCH_SIZE=3
 NEXT_PUBLIC_PROCESSING_MAX_RETRIES=3
 NEXT_PUBLIC_PROCESSING_RETRY_DELAY=1000
 NEXT_PUBLIC_PROCESSING_WORKER_URL=https://teleton-agente-cv-api-worker-processing-525254047375.us-central1.run.app
@@ -26,11 +25,11 @@ PROCESSING_RETRY_DELAY=1000
 
 ## Descripción de Variables
 
-### `NEXT_PUBLIC_PROCESSING_BATCH_SIZE`
-- **Descripción**: Número de CVs que se procesan por lote
-- **Valor por defecto**: `3`
-- **Rango recomendado**: `1-10`
-- **Uso**: Controla cuántos CVs se envían en cada petición al worker
+### Batch Size (Calculado Dinámicamente)
+- **Descripción**: El tamaño del lote se calcula automáticamente dividiendo la cantidad total de CVs por 15 (número de workers)
+- **Cálculo**: `Math.ceil(totalCVs / 15)`
+- **Mínimo**: 1 CV por lote
+- **Uso**: Se distribuyen los CVs equitativamente entre los 15 workers disponibles
 
 ### `NEXT_PUBLIC_PROCESSING_MAX_RETRIES`
 - **Descripción**: Número máximo de reintentos por lote
@@ -53,7 +52,6 @@ PROCESSING_RETRY_DELAY=1000
 
 ### Desarrollo Local
 ```env
-NEXT_PUBLIC_PROCESSING_BATCH_SIZE=3
 NEXT_PUBLIC_PROCESSING_MAX_RETRIES=3
 NEXT_PUBLIC_PROCESSING_RETRY_DELAY=1000
 NEXT_PUBLIC_PROCESSING_WORKER_URL=http://localhost:8080
@@ -61,7 +59,6 @@ NEXT_PUBLIC_PROCESSING_WORKER_URL=http://localhost:8080
 
 ### Producción
 ```env
-NEXT_PUBLIC_PROCESSING_BATCH_SIZE=5
 NEXT_PUBLIC_PROCESSING_MAX_RETRIES=3
 NEXT_PUBLIC_PROCESSING_RETRY_DELAY=1000
 NEXT_PUBLIC_PROCESSING_WORKER_URL=https://teleton-agente-cv-api-worker-processing-525254047375.us-central1.run.app
