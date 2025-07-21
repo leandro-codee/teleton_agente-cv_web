@@ -90,10 +90,10 @@ const DDCsPage = () => {
   const availableDDCs = ddcs.filter(ddc => ddc.id !== selectedDDC?.id)
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Descripciones de Cargos</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Descripciones de Cargos</h1>
           <p className="text-gray-600">
             Gestiona tus DDCs y procesos de selección
           </p>

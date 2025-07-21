@@ -260,7 +260,7 @@ const CreateDDCPage = () => {
         */}
 
         <div className="flex justify-end space-x-4">
-          <Button
+          {/* <Button
             type="button"
             variant="outline"
             onClick={handleSaveAsDraft}
@@ -268,7 +268,7 @@ const CreateDDCPage = () => {
           >
             <Save className="h-4 w-4 mr-2" />
             Guardar Borrador
-          </Button>
+          </Button> */}
           <Button
             type="button"
             onClick={handlePublish}

@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
   ExternalLink, 
   Folder, 
-  Settings, 
+  Bot, 
   BarChart3, 
   Copy, 
   ToggleLeft,
@@ -121,43 +121,77 @@ const DDCTable: React.FC<DDCTableProps> = ({
       </CardHeader>
       
       <CardContent>
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-x-auto min-w-full">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Cargo</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>CVs</TableHead>
-                <TableHead>Procesamientos</TableHead>
-                <TableHead>Creado</TableHead>
-                <TableHead>Acciones</TableHead>
+              <TableRow className="bg-gray-50">
+                <TableHead className="font-semibold w-[120px]">Acciones</TableHead>
+                <TableHead className="font-semibold">Cargo</TableHead>
+                <TableHead className="font-semibold whitespace-nowrap w-[100px]">Estado</TableHead>
+                <TableHead className="font-semibold text-center w-[80px]">CVs</TableHead>
+                <TableHead className="font-semibold whitespace-nowrap w-[100px]">Creado</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={5} className="text-center py-8">
                     Cargando DDCs...
                   </TableCell>
                 </TableRow>
               ) : ddcs.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8">
+                  <TableCell colSpan={5} className="text-center py-8">
                     No hay DDCs creadas. Crea tu primera DDC para comenzar.
                   </TableCell>
                 </TableRow>
               ) : (
                 ddcs.map((ddc) => (
-                  <TableRow key={ddc.id}>
+                  <TableRow key={ddc.id} className="hover:bg-gray-50">
+                    <TableCell className="w-[120px]">
+                      <div className="flex flex-wrap gap-1">
+                        {/* Gestionar CVs */}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onManageCVs(ddc)}
+                          title="Gestionar CVs"
+                        >
+                          <Folder className="h-4 w-4" />
+                        </Button>
+                        
+                        {/* Procesar CVs */}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onProcess(ddc)}
+                          title="Procesar CVs"
+                          disabled={ddc.cv_count === 0}
+                        >
+                          <Bot className="h-4 w-4" />
+                        </Button>
+                        
+                        {/* Ver Resultados */}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onResults(ddc)}
+                          title="Ver Resultados"
+                          disabled={ddc.processing_count === 0}
+                        >
+                          <BarChart3 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
                     <TableCell>
-                      <div>
-                        <div className="font-medium">{ddc.title}</div>
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                      <div className="w-full max-w-[200px] sm:max-w-[250px] md:max-w-[300px]">
+                        <div className="font-medium truncate">{ddc.title}</div>
+                        <div className="text-sm text-gray-500 truncate" title={ddc.description}>
                           {ddc.description}
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="w-[100px]">
                       <div className="flex items-center space-x-2">
                         {getStatusBadge(ddc.status)}
                         <DropdownMenu>
@@ -194,70 +228,10 @@ const DDCTable: React.FC<DDCTableProps> = ({
                         </DropdownMenu>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center w-[80px]">
                       <Badge variant="outline">{ddc.cv_count}</Badge>
                     </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{ddc.processing_count}</Badge>
-                    </TableCell>
-                    <TableCell>{formatDate(ddc.created_at)}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {/* Página Pública */}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => onPublicPage(ddc)}
-                          title="Página Pública"
-                          disabled={ddc.status === 'draft'}
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </Button>
-                        
-                        {/* Gestionar CVs */}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => onManageCVs(ddc)}
-                          title="Gestionar CVs"
-                        >
-                          <Folder className="h-4 w-4" />
-                        </Button>
-                        
-                        {/* Procesar CVs */}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => onProcess(ddc)}
-                          title="Procesar CVs"
-                          disabled={ddc.cv_count === 0}
-                        >
-                          <Settings className="h-4 w-4" />
-                        </Button>
-                        
-                        {/* Ver Resultados */}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => onResults(ddc)}
-                          title="Ver Resultados"
-                          disabled={ddc.processing_count === 0}
-                        >
-                          <BarChart3 className="h-4 w-4" />
-                        </Button>
-                        
-                        {/* Reutilizar CVs */}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => onReuseCVs(ddc)}
-                          title="Reutilizar CVs"
-                          disabled={ddc.cv_count === 0}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                    <TableCell className="w-[100px]">{formatDate(ddc.created_at)}</TableCell>
                   </TableRow>
                 ))
               )}
