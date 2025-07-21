@@ -8,10 +8,10 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'CV Evaluation System - Teletón',
+  title: 'Teletón - Sistema de Evaluación de CV',
   description: 'Sistema inteligente de evaluación y ranking de CVs',
-  keywords: ['CV', 'evaluation', 'AI', 'recruitment', 'HR'],
-  authors: [{ name: 'CV Evaluation Team' }],
+  keywords: ['CV', 'evaluation', 'AI', 'recruitment', 'HR', 'Teletón'],
+  authors: [{ name: 'Teletón' }],
 }
 
 export const viewport: Viewport = {

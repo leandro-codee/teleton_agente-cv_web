@@ -27,8 +27,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/dashboard" className="flex items-center space-x-2">
-              <Brain className="h-8 w-8 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">CV Evaluation</span>
+              <img src="/logo2.svg" alt="Teletón Logo" className="h-8 w-auto" />
             </Link>
 
             {/* User Menu */}

@@ -11,8 +11,7 @@ export default function HomePage() {
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Brain className="h-8 w-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">CV Evaluation System</h1>
+            <img src="/logo2.svg" alt="Teletón Logo" className="h-8 w-auto" />
           </div>
           <Link href="/dashboard">
             <Button variant="outline">

@@ -12,11 +12,8 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <Brain className="h-12 w-12 text-blue-600" />
+            <img src="/logo2.svg" alt="Teletón Logo" className="h-12 w-auto" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            CV Evaluation System
-          </h1>
           <p className="text-gray-600">
             Acceso para equipo de RRHH
           </p>
