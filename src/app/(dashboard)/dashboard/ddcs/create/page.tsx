@@ -157,7 +157,7 @@ const CreateDDCPage = () => {
         <div>
           <h1 className="text-3xl font-bold">Crear Nueva DDC</h1>
           <p className="text-gray-600">
-            Crea una nueva descripción de cargo para recibir postulaciones
+            Crea una nueva DDC para revisar CVs
           </p>
         </div>
       </div>
@@ -165,10 +165,10 @@ const CreateDDCPage = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Información Básica</CardTitle>
+            {/* <CardTitle>Información Básica</CardTitle>
             <CardDescription>
               Define los detalles principales de la posición
-            </CardDescription>
+            </CardDescription> */}
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -195,10 +195,10 @@ const CreateDDCPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="requirements">Requisitos *</Label>
+              <Label htmlFor="requirements">Ingrese requisitos especiales *</Label>
               <Textarea
                 id="requirements"
-                placeholder="Lista los requisitos técnicos, experiencia, habilidades, etc."
+                placeholder="Deseable experiencia el sector salud, experiencia en procesos de acreditación o certificación, etc."
                 value={formData.requirements}
                 onChange={(e) => handleInputChange('requirements', e.target.value)}
                 rows={6}
@@ -210,9 +210,9 @@ const CreateDDCPage = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Archivo de Referencia</CardTitle>
+            <CardTitle>Ingrese el archivo de la DDC *</CardTitle>
             <CardDescription>
-              Opcionalmente, sube un archivo PDF/DOC con detalles adicionales
+              Obligatorio, sube un archivo PDF/DOC con detalles adicionales
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -233,6 +233,7 @@ const CreateDDCPage = () => {
           </CardContent>
         </Card>
 
+        {/* Comentado temporalmente: Sección de Estado de Publicación
         <Card>
           <CardHeader>
             <CardTitle>Estado de Publicación</CardTitle>
@@ -256,6 +257,7 @@ const CreateDDCPage = () => {
             </div>
           </CardContent>
         </Card>
+        */}
 
         <div className="flex justify-end space-x-4">
           <Button
