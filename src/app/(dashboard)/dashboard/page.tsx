@@ -15,12 +15,12 @@ import Link from 'next/link'
 
 // Datos de ejemplo - en producción vendrían de la API
 const dashboardStats = {
-  totalDDCs: 12,
-  activeDDCs: 8,
-  totalCVs: 1247,
-  pendingProcessings: 3,
-  completedProcessings: 28,
-  averageScore: 72.5
+  totalDDCs: 0,
+  activeDDCs: 0,
+  totalCVs: 0,
+  pendingProcessings: 0,
+  completedProcessings: 0,
+  averageScore: 0
 }
 
 const recentActivity = [
