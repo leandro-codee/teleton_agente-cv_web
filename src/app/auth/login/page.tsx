@@ -1,7 +1,6 @@
 'use client'
 
 import { Suspense } from 'react'
-import { Brain } from 'lucide-react'
 import Link from 'next/link'
 import LoginForm from './LoginForm'
 
@@ -39,7 +38,7 @@ export default function LoginPage() {
         </Suspense>
 
         {/* Navigation Links */}
-        <div className="text-center space-y-2">
+        {/* <div className="text-center space-y-2">
           <Link href="/" className="text-sm text-gray-600 hover:text-gray-900 block">
             ← Volver al inicio
           </Link>
@@ -49,7 +48,7 @@ export default function LoginPage() {
               Contactar soporte
             </a>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )
