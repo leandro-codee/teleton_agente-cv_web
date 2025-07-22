@@ -130,14 +130,14 @@ export default function LoginForm() {
           </Button>
         </form>
 
-        <div className="mt-6 text-center">
+        {/* <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             ¿No tienes cuenta?{' '}
             <Link href="/auth/register" className="text-blue-600 hover:underline font-medium">
               Regístrate aquí
             </Link>
           </p>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   )
